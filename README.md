@@ -2,8 +2,8 @@
 A Revolutionary Order Generator for Hive Engine
 
 # Demo
-https://swiftcashproject.github.io/liquideity/
-https://liquideity.swiftcash.cc/
+* https://swiftcashproject.github.io/liquideity/
+* https://liquideity.swiftcash.cc/
 
 # Guide
 https://hive.blog/@liquideity
