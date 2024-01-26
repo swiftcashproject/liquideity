@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive Engine Orders Generator</title>
+    <style>
+        body {
+            font-family: monospace;
+            font-size: 1.05rem;
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        
+        input {
+            font-family: monospace;
+            font-size: 1.05rem;
+            width: 95%;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 10px auto;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            color: #fff;
+        }
+
+        th {
+            background-color: #444;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            letter-spacing: 5px
+        }
+
+        button:hover {
+            background-color: #777;
+        }
+
+
+        /* Styles for the modal dialogue */
+        .swal2-popup {
+            font-size: 14px;
+        }
+
+        .swal2-content {
+            text-align: left;
+        }
+
+        .swal2-title {
+            font-size: 28px;
+        }
+
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<h2>Hive Engine Orders Generator</h2>
+
+<form id="ordersForm">
+    <table>
+        <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Token's Symbol</td>
+            <td><input type="text" id="tokenSymbol" value="SWAP.SWIFT"></td>
+        </tr>
+        <tr>
+            <td>Token's Price</td>
+            <td><input type="text" id="tokenPrice" value="0.0008"></td>
+        </tr>
+        <tr>
+            <td>Trader</td>
+            <td><input type="text" id="trader" value="liquideity"></td>
+        </tr>
+        <tr>
+            <td>Active Key</td>
+            <td><input type="password" id="activeKey" value=""></td>
+        </tr>
+        <tr>
+            <td>Buy Orders</td>
+            <td><input type="number" id="bOrders" value="10"></td>
+        </tr>
+        <tr>
+            <td>Sell Orders</td>
+            <td><input type="number" id="sOrders" value="10"></td>
+        </tr>
+        <tr>
+            <td>Buy Steps</td>
+            <td><input type="number" id="buySteps" value="0.1"></td>
+        </tr>
+        <tr>
+            <td>Buy Amount</td>
+            <td><input type="number" id="buyAmount" value="2500"></td>
+        </tr>
+        <tr>
+            <td>Buy Multiplier</td>
+            <td><input type="number" id="bMultiplier" value="1.5"></td>
+        </tr>
+        <tr>
+            <td>Sell Steps</td>
+            <td><input type="number" id="sellSteps" value="0.1"></td>
+        </tr>
+        <tr>
+            <td>Sell Amount</td>
+            <td><input type="number" id="sellAmount" value="5000"></td>
+        </tr>
+        <tr>
+            <td>Sell Multiplier</td>
+            <td><input type="number" id="sMultiplier" value="1.2"></td>
+        </tr>
+        <tr>
+            <td>Hive Balance</td>
+            <td><input type="number" id="hiveBalance" value="103"></td>
+        </tr>
+        <tr>
+            <td>Token Balance</td>
+            <td><input type="number" id="tokenBalance" value="130000"></td>
+        </tr>
+        <!-- Add other parameters as needed -->
+    </table>
+
+    <button type="button" onclick="generateOrders()">Generate Orders</button>
+</form>
+
+<script>
+    var sumHive, sumToken;
+    async function generateOrders() {
+        const bOrders = parseInt(document.getElementById('bOrders').value);
+        const sOrders = parseInt(document.getElementById('sOrders').value);
+        const buySteps = parseFloat(document.getElementById('buySteps').value);
+        const buyAmount = parseFloat(document.getElementById('buyAmount').value);
+        const bMultiplier = parseFloat(document.getElementById('bMultiplier').value);
+        const sellSteps = parseFloat(document.getElementById('sellSteps').value);
+        const sellAmount = parseFloat(document.getElementById('sellAmount').value);
+        const sMultiplier = parseFloat(document.getElementById('sMultiplier').value);
+        const hiveBalance = parseFloat(document.getElementById('hiveBalance').value);
+        const tokenBalance = parseFloat(document.getElementById('tokenBalance').value);
+
+        // Call the existing logic to generate orders
+        const jsons = createOrders(tokenSymbol, trader, activeKey, bOrders, sOrders, buySteps, buyAmount, bMultiplier, sellSteps, sellAmount, sMultiplier, hiveBalance, tokenBalance);
+
+        // Display generated orders in the modal dialogue
+        showOrdersModal(jsons.filter(order => order.includes('buy')), jsons.filter(order => order.includes('sell')));
+    }
+
+    function createOrders(tokenSymbol, trader, activeKey, bOrders, sOrders, buySteps, buyAmount, bMultiplier, sellSteps, sellAmount, sMultiplier, hiveBalance, tokenBalance) {
+        const tokenPrice = parseFloat(document.getElementById('tokenPrice').value);
+        const precision = 8;
+
+        const orders = [];
+
+        let bFlag = false;
+        let sFlag = false;
+
+        bFlag = checkHiveBalance(bOrders, buySteps, buyAmount, bMultiplier, hiveBalance, tokenPrice, precision);
+        sFlag = checkTokenBalance(sOrders, sellSteps, sellAmount, sMultiplier, tokenBalance, tokenPrice, precision);
+
+        if (bFlag && sFlag) {
+            let price = tokenPrice;
+            for (let i = 0; i < bOrders; i++) {
+                price *= (1 - buySteps);
+                const amount = Math.pow(bMultiplier, i) * buyAmount;
+                orders.push(formatOrder("buy", amount.toFixed(precision), price.toFixed(precision)));
+            }
+
+            price = tokenPrice;
+            for (let i = 0; i < sOrders; i++) {
+                price *= (1 + sellSteps);
+                const amount = Math.pow(sMultiplier, i) * sellAmount;
+                orders.push(formatOrder("sell", amount.toFixed(precision), price.toFixed(precision)));
+            }
+        }
+
+        return orders;
+    }
+
+    function checkHiveBalance(bOrders, buySteps, buyAmount, bMultiplier, hiveBalance, tokenPrice, precision) {
+        let sum = 0;
+        let price = tokenPrice;
+
+        for (let i = 0; i < bOrders; i++) {
+            price *= (1 - buySteps);
+            const amount = Math.pow(bMultiplier, i) * buyAmount;
+            sum += amount * price;
+        }
+
+        sumHive = sum;
+        console.log("Hive SUM: " + sum);
+
+        if (sum > hiveBalance) {
+            console.log("Insufficient Balance(Hive): " + sum.toFixed(precision) + " $HIVE is required.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function checkTokenBalance(sOrders, sellSteps, sellAmount, sMultiplier, tokenBalance, tokenPrice, precision) {
+        let sum = 0;
+        let price = tokenPrice;
+
+        for (let i = 0; i < sOrders; i++) {
+            price *= (1 + sellSteps);
+            const amount = Math.pow(sMultiplier, i) * sellAmount;
+            sum += amount;
+        }
+
+        sumToken = sum;
+        console.log("Token SUM: " + sum);
+
+        if (sum > tokenBalance) {
+            console.log("Insufficient Balance(Token): " + sum.toFixed(precision) + " $TOKEN is required.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function formatOrder(direction, amount, price) {
+        return `${direction} ${amount} @ ${price}`;
+    }
+
+    function createOrder(direction, amount, price) {
+        const tokenSymbol = document.getElementById('tokenSymbol').value;
+        // Return order formatted as JSON
+        return {
+            contractName: "market",
+            contractAction: direction,
+            contractPayload: {
+                symbol: tokenSymbol,
+                quantity: amount,
+                price: price
+            }
+        };
+    }
+    
+    function showOrdersModal(buyOrders, sellOrders) {
+        const tokenSymbol = document.getElementById('tokenSymbol').value;
+        Swal.fire({
+            title: 'Generated Orders',
+            html: `
+                <div style="text-align: left;">
+                    <h3>Buy Orders</h3>
+                    <pre>${buyOrders.join('\n')}</pre>
+                    <pre>Total value: ${sumHive.toLocaleString()} $HIVE</pre>
+                    <h3>Sell Orders</h3>
+                    <pre>${sellOrders.join('\n')}</pre>
+                    <pre>Total value: ${sumToken.toLocaleString()} $${tokenSymbol}</pre>
+                </div>`,
+            showCancelButton: true,
+            confirmButtonText: 'Broadcast Orders',
+            cancelButtonText: 'Close',
+            showLoaderOnConfirm: true,
+            preConfirm: async () => {
+                await broadcastOrders(buyOrders.concat(sellOrders));
+            },
+            customClass: {
+                container: 'custom-swal-container',
+                confirmButton: 'custom-swal-confirm-button',
+                cancelButton: 'custom-swal-cancel-button'
+            }
+        });
+    }
+
+    async function broadcastOrders(orders) {
+        const batch = 5;
+        const wait = 5000;
+
+        for (let i = 0; i < orders.length; i++) {
+            const orderString = orders[i];
+            const orderDetails = orderString.split(' ');  // Assuming the orderString is space-separated
+
+            // Create JSON format using the createOrder function
+            const jsonOrder = createOrder(orderDetails[0], orderDetails[1], orderDetails[3]);
+            console.log(jsonOrder)
+            await hiveBroadcastJson(jsonOrder);
+
+            //if ((i + 1) % batch === 0) {
+            //    await sleep(wait);
+            //}
+        }
+
+        Swal.fire({
+            title: 'Orders Broadcasted!',
+            icon: 'success'
+        });
+    }
+
+    function hiveBroadcastJson(json) {
+        return new Promise((resolve, reject) => {
+            const trader = document.getElementById('trader').value;
+            const activeKey = document.getElementById('activeKey').value;
+            hive.broadcast.customJson(activeKey, [trader], [], "ssc-mainnet-hive", JSON.stringify(json), function (error, result) {
+                if (error) {
+                    console.error(error);
+                    reject(error);
+                } else {
+                    console.log(result);
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+</script>
+
+</body>
+</html>
