@@ -293,9 +293,6 @@
     }
 
     async function broadcastOrders(orders) {
-        const batch = 5;
-        const wait = 5000;
-
         for (let i = 0; i < orders.length; i++) {
             const orderString = orders[i];
             const orderDetails = orderString.split(' ');  // Assuming the orderString is space-separated
@@ -304,10 +301,6 @@
             const jsonOrder = createOrder(orderDetails[0], orderDetails[1], orderDetails[3]);
             console.log(jsonOrder)
             await hiveBroadcastJson(jsonOrder);
-
-            //if ((i + 1) % batch === 0) {
-            //    await sleep(wait);
-            //}
         }
 
         Swal.fire({
@@ -332,9 +325,6 @@
         });
     }
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
 </script>
 
 </body>
