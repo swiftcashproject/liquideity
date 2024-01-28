@@ -318,9 +318,9 @@
     }
 
     function hiveBroadcastJson(json) {
-        bUseKeychain = document.getElementById('activeKey').checked;
+        bUseKeychain = document.getElementById('useKeychain').checked;
         const trader = document.getElementById('trader').value;
-        
+
         if(!bUseKeychain)
             return new Promise((resolve, reject) => {                
                 const activeKey = document.getElementById('activeKey').value;
