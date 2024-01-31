@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://swiftcash.cc/images/favicon.ico" type="icon/ico">
-    <title>Hive Engine Orders Generator</title>
+    <title>Liquideity - Hive Engine</title>
     <style>
         body {
             font-family: monospace;
@@ -83,7 +83,7 @@
 </head>
 <body>
 
-<h2>Hive Engine Orders Generator</h2>
+<h2><a style="color: white;" href="https://hive.blog/hiveengine/@liquideity/hive-engine-generate-your-orders-with-liquideity" target="_blank">Hive Engine Orders Generator</a></h2>
 
 <form id="ordersForm">
     <table>
@@ -93,59 +93,59 @@
         </tr>
         <tr>
             <td>Token's Symbol</td>
-            <td><input type="text" id="tokenSymbol" value="SWAP.SWIFT"></td>
+            <td><input type="text" id="tokenSymbol" value="SWAP.SWIFT" placeholder="Hive Token's Ticker"></td>
         </tr>
         <tr>
             <td>Token's Price</td>
-            <td><input type="text" id="tokenPrice" value="0.0008"></td>
+            <td><input type="text" id="tokenPrice" value="0.001" placeholder="Hive Token's Price"></td>
         </tr>
         <tr>
             <td>Trader</td>
-            <td><input type="text" id="trader" value="liquideity"></td>
+            <td><input type="text" id="trader" value="" placeholder="Your Hive's Username"></td>
         </tr>
         <tr>
             <td><span style="white-space: nowrap; ">Active Key <input onchange="fUseKeychain(this.checked);" style="width: 15px!important; height:15px; vertical-align: middle;" type="checkbox" id="useKeychain" /><label for="useKeychain">Use Keychain</label></span></td>
-            <td><input type="password" id="activeKey" value=""></td>
+            <td><input type="password" id="activeKey" value="" placeholder="Your Hive's Active Key"></td>
         </tr>
         <tr>
             <td>Buy Orders</td>
-            <td><input type="number" id="bOrders" value="10"></td>
+            <td><input type="number" id="bOrders" value="10" placeholder="Number of Buy Orders"></td>
         </tr>
         <tr>
             <td>Sell Orders</td>
-            <td><input type="number" id="sOrders" value="10"></td>
+            <td><input type="number" id="sOrders" value="10" placeholder="Number of Sell Orders"></td>
         </tr>
         <tr>
             <td>Buy Steps</td>
-            <td><input type="number" id="buySteps" value="0.1"></td>
+            <td><input type="number" id="buySteps" value="0.1" placeholder="Buy Steps(Percentage/0.1 means 10%)"></td>
         </tr>
         <tr>
             <td>Buy Amount</td>
-            <td><input type="number" id="buyAmount" value="100"></td>
+            <td><input type="number" id="buyAmount" value="100" placeholder="Amount of Token to Buy"></td>
         </tr>
         <tr>
             <td>Buy Multiplier</td>
-            <td><input type="number" id="bMultiplier" value="1.5"></td>
+            <td><input type="number" id="bMultiplier" value="1.5" placeholder="Multiply Amount of Buy(1.5 means x1.5)"></td>
         </tr>
         <tr>
             <td>Sell Steps</td>
-            <td><input type="number" id="sellSteps" value="0.1"></td>
+            <td><input type="number" id="sellSteps" value="0.1" placeholder="Sell Steps(Percentage/0.1 means 10%)"></td>
         </tr>
         <tr>
             <td>Sell Amount</td>
-            <td><input type="number" id="sellAmount" value="100"></td>
+            <td><input type="number" id="sellAmount" value="100" placeholder="Amount of Token to Sell"></td>
         </tr>
         <tr>
             <td>Sell Multiplier</td>
-            <td><input type="number" id="sMultiplier" value="1.5"></td>
+            <td><input type="number" id="sMultiplier" value="1.5" placeholder="Multiply Amount of Sell(1.5 means x1.5)"></td>
         </tr>
         <tr>
             <td>Hive Balance</td>
-            <td><input type="number" id="hiveBalance" value="10"></td>
+            <td><input type="number" id="hiveBalance" value="10" placeholder="Your Hive Balance"></td>
         </tr>
         <tr>
             <td>Token Balance</td>
-            <td><input type="number" id="tokenBalance" value="12000"></td>
+            <td><input type="number" id="tokenBalance" value="12000" placeholder="Your Token's Balance"></td>
         </tr>
         <!-- Add other parameters as needed -->
     </table>
